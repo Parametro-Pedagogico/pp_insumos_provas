@@ -1,0 +1,109 @@
+# Configuração do gerador de capas.
+# Coordenadas em pontos PDF (1 pt = 1/72 pol = 0,3528 mm), origem no canto superior esquerdo.
+
+edicao: "2026-2"            # entra no cálculo do código do cartão (mudar a cada edição)
+pdf_origem: modelos/Capa_Caderno_Prova.pdf
+
+fontes:
+  dados_regular: fonts/Aleo-Regular.ttf
+  dados_negrito: fonts/Aleo-Bold.ttf
+  sans_regular: fonts/LiberationSans-Regular.ttf
+  sans_negrito: fonts/LiberationSans-Bold.ttf
+  rotulo: fonts/LexendGiga-Bold.ttf
+
+cores:
+  # Cor de "dropout": some no canal vermelho do scanner. Em impressão P&B vira cinza médio.
+  dropout: [240, 91, 93]
+  tinta: [0, 0, 0]
+
+# Como montar cada campo da capa a partir das colunas da planilha.
+# Use {Nome da Coluna} exatamente como no cabeçalho (maiúsculas/acentos são ignorados na busca).
+campos:
+  escola: "{Marca} - {Unidade}"
+  serie: "{Série}"
+  turma: "{Turma}"
+  estudante: "{Nome do aluno}"
+  ra: "{RA}"
+  caderno: "{Caderno}"                    # opcional: se a coluna não existir, usa cadernos_por_serie
+  codigo_cartao: "{Código do Cartão}"     # opcional: se a coluna não existir/vazia, o código é gerado
+
+# Cadernos de cada série. Cada aluno recebe UM deles, por sorteio balanceado dentro da turma
+# (ver bloco "sorteio"). A série é o primeiro número da coluna Série ("9º ANO MILITAR" -> 9).
+cadernos_por_serie:
+  2: [C0201, C0202]
+  5: [C0501, C0502]
+  9: [C0901, C0902]
+
+# Sorteio do caderno de cada aluno: equilibrado por turma, escola e no total (diferença máx. de 1).
+# O resultado fica salvo em <saida>/sorteio_cadernos.csv e é reaproveitado nas próximas execuções.
+sorteio:
+  ativo: true
+  semente: "2026-2-edicao"   # mesma semente = mesmo sorteio; trocar só se quiser outro sorteio
+
+# Imagens do Canva que são removidas (recortes do print antigo do cartão e a faixa do QR antigo),
+# identificadas pelo tamanho em pixels [largura, altura].
+imagens_remover: [[783, 185], [727, 558], [981, 1063]]
+
+# Layouts de grade: cada um recebe um conjunto próprio de marcadores ArUco (ids 4*id .. 4*id+3),
+# o que permite ao leitor identificar o layout mesmo sem o QR Code.
+layouts:
+  L25:
+    id: 0
+    questoes: 25
+    colunas: [10, 10, 5]
+    alternativas: [A, B, C, D]
+  L45:
+    id: 1
+    questoes: 45
+    colunas: [12, 12, 12, 9]
+    alternativas: [A, B, C, D]
+  L60:
+    id: 2
+    questoes: 60
+    colunas: [15, 15, 15, 15]
+    alternativas: [A, B, C, D]
+
+# Modelos visuais = páginas do PDF do Canva.
+modelos:
+  M02:
+    pagina: 0
+    area_grade: [92, 528, 566, 764]       # retângulo externo dos 4 marcadores
+    limite_dados: 325                     # y máximo da última linha de dados (quebra de linha)
+    caixa_exemplo: [416.1, 485.4, 562.7, 521.1]
+    instrucoes_topo: [93, 492]            # 3 linhas de instrução (só neste modelo)
+    rotulo_codigo: [89.8, 71.0, 140.2, 80.1]
+    qr: [481.2, 233.8, 551.8, 304.1]
+  M09:
+    pagina: 1
+    area_grade: [72, 505, 562, 786]
+    limite_dados: 236
+    caixa_exemplo: [372.7, 452.0, 525.1, 488.7]
+    rotulo_codigo: [81.1, 34.8, 134.9, 44.6]
+    qr: [475.7, 143.0, 546.7, 213.8]
+  M05:
+    pagina: 2
+    area_grade: [84, 563, 568, 800]
+    limite_dados: 296
+    caixa_exemplo: [380.6, 508.2, 532.7, 544.9]
+    rotulo_codigo: [94.2, 64.8, 149.2, 73.9]
+    qr: [483.8, 203.0, 554.9, 273.8]
+
+# Cadernos: código que vem na planilha -> modelo visual + layout da grade.
+cadernos:
+  C0201: {modelo: M02, layout: L25}
+  C0202: {modelo: M02, layout: L25}
+  C0501: {modelo: M05, layout: L45}
+  C0502: {modelo: M05, layout: L45}
+  C0901: {modelo: M09, layout: L60}
+  C0902: {modelo: M09, layout: L60}
+
+otimizacao:
+  fundo_jpeg: true      # fundo do Canva em JPEG (reduz ~70% do tamanho do PDF)
+  fundo_dpi: 150
+  jpeg_qualidade: 85
+
+# Padronização do nome do estudante na capa (inicial maiúscula em cada palavra, demais minúsculas).
+nomes:
+  padronizar: true
+  particulas_minusculas: [de, da, do, das, dos, e]   # deixe [] para capitalizar todas as palavras
+  remover_parenteses: true                          # ex.: "João Silva (apelido)" -> "João Silva"

@@ -1,0 +1,9 @@
+pymupdf>=1.24
+opencv-contrib-python-headless>=4.8   # inclui o módulo aruco
+numpy
+pandas
+openpyxl
+qrcode
+pillow
+pyyaml
+fonttools   # subset de fontes (PDF menor)
