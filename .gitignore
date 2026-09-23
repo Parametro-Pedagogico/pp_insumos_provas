@@ -1,0 +1,25 @@
+# ---- Dados de alunos: NUNCA versionar ----
+dados/*
+!dados/LEIA-ME.md
+*.xlsx
+*.xls
+*.csv
+!exemplos/*.csv
+
+# ---- Saídas geradas (capas, manifestos, sorteio, códigos, verificação) ----
+saida*/
+*.pdf
+!modelos/*.pdf
+
+# ---- Python / ambiente ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+ambiente/
+.pytest_cache/
+
+# ---- Sistema ----
+.DS_Store
+Thumbs.db
+~$*
